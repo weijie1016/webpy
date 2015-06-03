@@ -1,0 +1,25 @@
+group
+    group_id
+    group_name
+    group_status（1:有效，0:无效）
+    
+user
+    user_id
+    user_name
+    user_pwd
+    user_level
+    user_status(1:有效，0:无效)
+    user_group_id
+worklog
+    worklog_id
+    worklog_task_id
+    worklog_issue
+    worklog_plan
+    worklog_comment
+    worklog_user_id
+    worklog_date
+    
+task
+    task_id
+    task_content
+    task_hours

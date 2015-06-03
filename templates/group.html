@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>group</title>
+    <script type="text/javascript" src="/static/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/themes/metro/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/static/demo/demo.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+    <style>
+        body{margin:0;padding:0}
+    </style>
+    <script>
+    jQuery(document).ready(function(){  
+        jQuery.ajax({url:"http://localhost:8080/group/view",async:false});
+        jQuery('#group_list').datagrid({
+            title:'Group',
+            method:'GET',
+            rownumbers:true,
+            fitColumns:false,
+            singleSelect:true,
+            url:'http://localhost:8080/group/view',
+            columns:[[
+                {field:'group_id',title:'group_id',width:100},     
+                {field:'group_name',title:'group_name',width:100}     
+            ]],
+            toolbar:[
+                {text:"增加",iconCls:"icon-add",handler:function(){add_group();}},
+                {text:"修改",iconCls:"icon-edit",handler:function(){edit_group();}},
+                {text:"删除",iconCls:"icon-remove",handler:function(){alert('del');}}
+            ]
+        });
+    });
+    var url;
+    function add_group(){
+       jQuery('#group_add').dialog('open').dialog('setTitle','Add Group');
+    }
+    function edit_group(){
+        jQuery('#group_edit').dialog('open').dialog('setTitle','Edit Group');
+    }
+    /*function save_group(){
+        jQuery('#group_add_form').form('submit',{
+            url:url,
+            onSubmit:function(){
+                return jQuery(this).form('validate');
+            },
+            success:function(result){
+                var result=eval('('+result+')');
+                if(result.errorMsg){
+                    jQuery.message.show({
+                        title:'Error',
+                        msg:result.errorMsg
+                    });
+                }else{
+                    jQuery('#group_add').dialog('close');
+                    jQuery('#group_list').datagrid('reload');
+                }
+            }
+        });
+    }*/
+    </script>
+</head>
+<body>
+    <div id="group_list"></div>
+    
+    <div id="group_add" class="easyui-dialog" style="width:500px;height:250px;padding:10px 20px" closed="true" buttons="#group_add_buttons" modal="true">
+        <div class="ftitle">Add Group</div>
+        <form id="group_add_form" method="post">
+            <div class="fitem">
+                <label>Group Name:</label>
+                <input name="group_name" class="easyui-validatebox" required="true">
+            </div>
+        </form>
+    </div>
+    <div id="group_add_buttons">
+        <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="save_group()">Save</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:jQuery('#group_add').dialog('close')">Cancel</a>
+    </div>
+    
+    <div id="group_edit" class="easyui-dialog" style="width:550px;height:250px;padding:10px 20px" closed="true" buttons="group_edit_buttons" modal="true">
+        <form id="group_edit_form" method="post">
+            <div class="fitem">
+                <label>Group Name:</label>
+                <input name="group_name" class="easyui-validatebox" required="true">
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
