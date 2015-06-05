@@ -4,7 +4,7 @@
     <title>group</title>
     <script type="text/javascript" src="/static/jquery.min.js"></script>
     <script type="text/javascript" src="/static/jquery.easyui.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/themes/metro/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/themes/default/easyui.css">
     <link rel="stylesheet" type="text/css" href="/static/themes/icon.css">
     <link rel="stylesheet" type="text/css" href="/static/demo/demo.css">
     <link rel="stylesheet" type="text/css" href="/static/css/main.css">
@@ -35,11 +35,12 @@
     var url;
     function add_group(){
        jQuery('#group_add').dialog('open').dialog('setTitle','Add Group');
+       url="localhost:8080/group/new";
     }
     function edit_group(){
         jQuery('#group_edit').dialog('open').dialog('setTitle','Edit Group');
     }
-    /*function save_group(){
+    function save_group(){
         jQuery('#group_add_form').form('submit',{
             url:url,
             onSubmit:function(){
@@ -58,7 +59,7 @@
                 }
             }
         });
-    }*/
+    }
     </script>
 </head>
 <body>
