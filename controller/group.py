@@ -22,10 +22,11 @@ class view:
             self.group_post.append(post)
         return json.dumps(self.group_post)
 
-# class new:
-    # def __init__(self):
-        # pass
-    # def POST(self):
-        
+class new:
+    def POST(self):
+        i=web.input()
+        group_name=i.group_name
+        group_model.new_group_post(group_name)
+        raise web.seeother("/group")
 
 app_group=web.application(urls,locals())
