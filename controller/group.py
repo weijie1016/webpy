@@ -6,7 +6,9 @@ urls = (
     "","index",
     "/","index",
     "/view","view",
-    "/new","new"
+    "/view/","view",
+    "/new","new",
+    "/wjtest","wjtest"
 )
 
 class index:
@@ -21,12 +23,22 @@ class view:
         for post in posts:
             self.group_post.append(post)
         return json.dumps(self.group_post)
-
+class wjtest:
+    def GET(self):
+        dict={'success':1}
+        return json.dumps(dict)
+        
+  
 class new:
     def POST(self):
         i=web.input()
         group_name=i.group_name
-        group_model.new_group_post(group_name)
-        raise web.seeother("/group")
+        result=group_model.new_group_post(group_name)
+        if result:
+            d={'success':1}
+        else:
+            d={'msg':'Some errors occured.'}
+        return json.dumps(d)
+        
 
 app_group=web.application(urls,locals())

@@ -13,14 +13,16 @@
     </style>
     <script>
     jQuery(document).ready(function(){  
-        jQuery.ajax({url:"http://localhost:8080/group/view",async:false});
+        //jQuery.ajax({url:"http://localhost:8080/group/view",async:false});
+        
         jQuery('#group_list').datagrid({
             title:'Group',
             method:'GET',
             rownumbers:true,
-            fitColumns:false,
-            singleSelect:true,
-            url:'http://localhost:8080/group/view',
+            fitColumns:true,
+            pagination:true,
+            width:500,
+            url:"http://localhost:8080/group/view",
             columns:[[
                 {field:'group_id',title:'group_id',width:100},     
                 {field:'group_name',title:'group_name',width:100}     
@@ -28,14 +30,14 @@
             toolbar:[
                 {text:"增加",iconCls:"icon-add",handler:function(){add_group();}},
                 {text:"修改",iconCls:"icon-edit",handler:function(){edit_group();}},
-                {text:"删除",iconCls:"icon-remove",handler:function(){alert('del');}}
+                {text:"删除",iconCls:"icon-remove",handler:function(){del_group();}}
             ]
         });
     });
     var url;
     function add_group(){
        jQuery('#group_add').dialog('open').dialog('setTitle','Add Group');
-       url="localhost:8080/group/new";
+       url="http://localhost:8080/group/new";
     }
     function edit_group(){
         jQuery('#group_edit').dialog('open').dialog('setTitle','Edit Group');
@@ -45,20 +47,29 @@
             url:url,
             onSubmit:function(){
                 return jQuery(this).form('validate');
+                //alert(url);
             },
             success:function(result){
                 var result=eval('('+result+')');
-                if(result.errorMsg){
-                    jQuery.message.show({
+                if(result.msg){
+                    jQuery.messager.show({
                         title:'Error',
-                        msg:result.errorMsg
+                        msg:result.msg
                     });
                 }else{
+                    var getTimestamp=new Date().getTime();
+                    url="http://localhost:8080/group/view/?timestamp="+getTimestamp;
                     jQuery('#group_add').dialog('close');
-                    jQuery('#group_list').datagrid('reload');
+                    jQuery('#group_list').datagrid('reload',{
+                        url:url
+                    });
                 }
+                
             }
         });
+    }
+    function del_group(){
+        alert('aaa');
     }
     </script>
 </head>
