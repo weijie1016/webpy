@@ -12,17 +12,17 @@
         body{margin:0;padding:0}
     </style>
     <script>
+	var host="http://"+window.location.host;
     jQuery(document).ready(function(){  
-        //jQuery.ajax({url:"http://localhost:8080/group/view",async:false});
-        
+
         jQuery('#group_list').datagrid({
-            title:'Group',
+            //title:'Group',
             method:'GET',
             rownumbers:true,
             fitColumns:true,
             pagination:true,
             width:500,
-            url:"http://localhost:8080/group/view",
+            url:host+"/group/view",
             columns:[[
                 {field:'group_id',title:'group_id',width:100},     
                 {field:'group_name',title:'group_name',width:100}     
@@ -37,7 +37,7 @@
     var url;
     function add_group(){
        jQuery('#group_add').dialog('open').dialog('setTitle','Add Group');
-       url="http://localhost:8080/group/new";
+       url=host+"/group/new";
     }
     function edit_group(){
         jQuery('#group_edit').dialog('open').dialog('setTitle','Edit Group');
@@ -58,7 +58,7 @@
                     });
                 }else{
                     var getTimestamp=new Date().getTime();
-                    url="http://localhost:8080/group/view/?timestamp="+getTimestamp;
+                    url=host+"/group/view/?timestamp="+getTimestamp;
                     jQuery('#group_add').dialog('close');
                     jQuery('#group_list').datagrid('reload',{
                         url:url
