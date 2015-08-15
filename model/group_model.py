@@ -9,3 +9,11 @@ def new_group_post(group_name):
     except:
         result=0
     return result
+def del_group_post(group_ids):
+    try:
+        for group_id in group_ids:
+            db.delete('groups',where='group_id=$group_id',vars=locals())
+        result=1
+    except:
+        result=0
+    return result
