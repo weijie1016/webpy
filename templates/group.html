@@ -12,7 +12,7 @@
         body{margin:0;padding:0}
     </style>
     <script>
-	var host="http://"+window.location.host;
+    var host="http://"+window.location.host;
     jQuery(document).ready(function(){  
 
         jQuery('#group_list').datagrid({
@@ -20,15 +20,16 @@
             method:'GET',
             rownumbers:true,
             fitColumns:true,
-            pagination:true,
-            width:500,
+            pagination:false,
+            border:false,
+            //width:500,
             url:host+"/group/view",
             columns:[[
-                {field:'group_id',title:'group_id',width:100},     
-                {field:'group_name',title:'group_name',width:100}     
+                {field:'group_id',title:'group_id',width:10},     
+                {field:'group_name',title:'group_name',width:90}     
             ]],
             toolbar:[
-                {text:"增加",iconCls:"icon-add",handler:function(){add_group();}},
+                {text:"新建",iconCls:"icon-add",handler:function(){add_group();}},
                 {text:"修改",iconCls:"icon-edit",handler:function(){edit_group();}},
                 {text:"删除",iconCls:"icon-remove",handler:function(){del_group();}}
             ]
@@ -69,7 +70,37 @@
         });
     }
     function del_group(){
-        alert('aaa');
+        var row = jQuery('#group_list').datagrid('getSelections');
+        var group_ids=new Array();
+        for(var i=0;i<row.length;i++){
+            var id=row[i].group_id;
+            //alert(id);
+            group_ids.push(id);
+            //alert(group_ids.toString());
+        }
+       // alert(group_ids.length)
+       // alert(group_ids.toString())
+        if(row.length!=0){
+            jQuery.messager.confirm('Confirm','Are you sure you want to destroy this group?',function(r){
+                if(r){
+                    jQuery.post(host+'/group/delete',{group_idstr:group_ids.toString()},function(result){
+                        if(result.success){
+                            jQuery('#group_list').datagrid('reload');    // reload the user data
+                        }else{
+                            jQuery.messager.show({    // show error message
+                                title: 'Error',
+                                msg: result.msg
+                            });
+                        }
+                    },'json');
+                }
+            });
+        }else{
+            jQuery.messager.show({
+                title:'提示',
+                msg:'请选择一条记录'
+            });
+        }
     }
     </script>
 </head>
