@@ -8,7 +8,9 @@ urls = (
     "/view","view",
     "/view/","view",
     "/new","new",
-    "/wjtest","wjtest"
+    "/wjtest","wjtest",
+    "/delete","delete",
+    "/delete/","delete"
 )
 
 class index:
@@ -34,6 +36,18 @@ class new:
         i=web.input()
         group_name=i.group_name
         result=group_model.new_group_post(group_name)
+        if result:
+            d={'success':1}
+        else:
+            d={'msg':'Some errors occured.'}
+        return json.dumps(d)
+        
+class delete:
+    def POST(self):
+        i=web.input()
+        group_idstr=i.get('group_idstr')
+        group_ids=group_idstr.split(",")
+        result=group_model.del_group_post(group_ids)
         if result:
             d={'success':1}
         else:
