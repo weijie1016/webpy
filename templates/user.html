@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>user</title>
+    <script type="text/javascript" src="/static/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/static/demo/demo.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+    <style>
+        body{margin:0;padding:0}
+    </style>
+    <script>
+    var host="http://"+window.location.host;
+    jQuery(document).ready(function(){  
+        jQuery('#user_list').datagrid({
+            //title:'user',
+            method:'GET',
+            rownumbers:true,
+            fitColumns:true,
+            pagination:false,
+            border:false,
+            //width:500,
+            url:host+"/user/view",
+            columns:[[
+                {field:'user_id',title:'user_id',width:10},     
+                {field:'user_name',title:'user_name',width:30},
+                {field:'group_name',title:'group_name',width:40},
+                {field:'user_level',title:'user_level',width:10},
+                {field:'user_status',title:'user_status',width:10}
+            ]],
+            toolbar:[
+                {text:"新建",iconCls:"icon-add",handler:function(){add_user();}},
+                {text:"修改",iconCls:"icon-edit",handler:function(){edit_user();}},
+                {text:"删除",iconCls:"icon-remove",handler:function(){del_user();}}
+            ]
+        });
+    });
+    var url;
+    function add_user(){
+       jQuery('#user_add_edit').dialog('open').dialog('setTitle','Add user');
+       url=host+"/user/new";
+    }
+    function edit_user(){
+    	var row=jQuery('#user_list').datagrid('getSelected');
+    	if(row){
+        	jQuery('#user_add_edit').dialog('open').dialog('setTitle','Edit user');
+
+        	url=host+"/user/edit/"+row.user_id;
+    	}else{
+    		jQuery.messager.show({
+                title:'提示',
+                msg:'请选择一条记录'
+            });
+    	}
+    }
+    function save_user(){
+        jQuery('#user_form').form('submit',{
+            url:url,
+            onSubmit:function(){
+                return jQuery(this).form('validate');
+                //alert(url);
+            },
+            success:function(result){
+                var result=eval('('+result+')');
+                if(result.msg){
+                    jQuery.messager.show({
+                        title:'Error',
+                        msg:result.msg
+                    });
+                }else{
+                    var getTimestamp=new Date().getTime();
+                    url=host+"/user/view/?timestamp="+getTimestamp;
+                    jQuery('#user_add_edit').dialog('close');
+                    jQuery('#user_list').datagrid('reload',{
+                        url:url
+                    });
+                }
+            }
+        });
+        jQuery('#user_form').form('clear');
+    }
+    function del_user(){
+        var row = jQuery('#user_list').datagrid('getSelections');
+        var user_ids=new Array();
+        for(var i=0;i<row.length;i++){
+            var id=row[i].user_id;
+            //alert(id);
+            user_ids.push(id);
+            //alert(user_ids.toString());
+        }
+       // alert(user_ids.length)
+       // alert(user_ids.toString())
+        if(row.length!=0){
+            jQuery.messager.confirm('Confirm','Are you sure you want to destroy this user?',function(r){
+                if(r){
+                    jQuery.post(host+'/user/delete',{user_idstr:user_ids.toString()},function(result){
+                        if(result.success){
+                            jQuery('#user_list').datagrid('reload');    // reload the user data
+                        }else{
+                            jQuery.messager.show({    // show error message
+                                title: 'Error',
+                                msg: result.msg
+                            });
+                        }
+                    },'json');
+                }
+            });
+        }else{
+            jQuery.messager.show({
+                title:'提示',
+                msg:'请选择一条记录'
+            });
+        }
+    }
+    //
+    jQuery.extend(jQuery.fn.validatebox.defaults.rules, {  
+        /*必须和某个字段相等*/
+        equalTo: {
+            validator:function(value,param){
+                return jQuery(param[0]).val() == value;
+            },
+            message:'字段不匹配'
+        } 
+    });
+    </script>
+</head>
+<body>
+    <div id="user_list"></div>
+    
+    <div id="user_add_edit" class="easyui-dialog" style="width:500px;height:300px;padding:10px 20px" closed="true" buttons="#user_buttons" modal="true">
+        <div class="ftitle">Add user</div>
+        <form id="user_form" method="post">
+            <div class="fitem">
+                <label>user Name:</label>
+                <input id="user_name" name="user_name" class="easyui-validatebox" required="true">
+            </div>
+            <div class="fitem">
+                <label>user Password:</label>
+                <input id="user_pwd" name="user_pwd" validType="length[4,32]" class="easyui-validatebox" required="true" type="password" value="" />
+            </div>
+            <div class="fitem">
+                <label>user Password:</label>
+                <input id="re_user_pwd" name="re_user_pwd" class="easyui-validatebox" required="true" type="password" validType="equalTo['#user_pwd']" invalidMessage="两次输入密码不匹配" />
+            </div>
+            <div class="fitem">
+                <label>user Level:</label>
+                <select id="user_level" class="easyui-combobox" name="user_level" data-options="required:true">
+                	<option value="1">User</option>
+                	<option value="2">Administrator</option>
+                </select>
+            </div>
+            <div class="fitem">
+                <label>user Group:</label>
+    				<input id="user_group_id" class="easyui-combobox" name="user_group_id"
+        			data-options="required:'true',valueField:'group_id',textField:'group_name',url:'/group/view',method:'GET'">
+            </div>
+        </form>
+    </div>
+    <div id="user_buttons">
+        <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="save_user()">Save</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:jQuery('#user_add_edit').dialog('close')">Cancel</a>
+    </div>
+
+</body>
+</html>
