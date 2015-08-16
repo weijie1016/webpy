@@ -1,6 +1,7 @@
 import web
 import json
-from model import group_model
+import hashlib
+from model import user_model
 from conf.render_config import render
 urls = (
     "","index",
@@ -11,21 +12,24 @@ urls = (
     "/wjtest","wjtest",
     "/delete","delete",
     "/delete/","delete",
-    "/edit/(\d+)","edit"
+    "/edit/(\d+)","edit",
+    "/login","login",
+    "/login/","login",
+    
 )
 
 class index:
     def GET(self):
-        return render.group()
+        return render.user()
 
 class view:
     def __init__(self):
-        self.group_post=[]
+        self.user_post=[]
     def GET(self):
-        posts=group_model.get_group_posts()
+        posts=user_model.get_user_posts()
         for post in posts:
-            self.group_post.append(post)
-        return json.dumps(self.group_post)
+            self.user_post.append(post)
+        return json.dumps(self.user_post)
 class wjtest:
     def GET(self):
         dict={'success':1}
@@ -35,18 +39,24 @@ class wjtest:
 class new:
     def POST(self):
         i=web.input()
-        group_name=i.group_name
-        result=group_model.new_group_post(group_name)
+        user_name=i.user_name
+        user_pwd=i.user_pwd
+        user_level=i.user_level
+        user_group_id=i.user_group_id
+        m=hashlib.md5()
+        m.update(user_pwd)
+        user_pwd=m.hexdigest()
+        result=user_model.new_user_post(user_name,user_pwd,user_level,user_group_id)
         if result:
             d={'success':1}
         else:
             d={'msg':'Some errors occured.'}
         return json.dumps(d)
 class edit:
-    def POST(self,group_id):
+    def POST(self,user_id):
         i=web.input()
-        group_name=i.group_name
-        result=group_model.edit_group_post(group_id,group_name)
+        user_name=i.user_name
+        result=user_model.edit_user_post(user_id,user_name)
         if result:
             d={'success':1}
         else:
@@ -55,14 +65,20 @@ class edit:
 class delete:
     def POST(self):
         i=web.input()
-        group_idstr=i.get('group_idstr')
-        group_ids=group_idstr.split(",")
-        result=group_model.del_group_post(group_ids)
+        user_idstr=i.get('user_idstr')
+        user_ids=user_idstr.split(",")
+        result=user_model.del_user_post(user_ids)
         if result:
             d={'success':1}
         else:
             d={'msg':'Some errors occured.'}
         return json.dumps(d)
+class login:
+    def GET(self):
+        return "login"
+    def POST(self):
+        pass
+        
         
 
-app_group=web.application(urls,locals())
+app_user=web.application(urls,locals())
