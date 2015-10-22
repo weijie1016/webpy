@@ -4,6 +4,9 @@ from conf.db_config import db
 def get_user_posts():
     return db.select('user_group_view')
 
+def is_login(user_name,user_pwd):
+    return db.where('users',user_name=user_name,user_pwd=user_pwd)
+
 def new_user_post(user_name,user_pwd,user_level,user_group_id):
     try:
         result=db.insert('users',user_name=user_name,user_pwd=user_pwd,user_level=user_level,user_group_id=user_group_id)

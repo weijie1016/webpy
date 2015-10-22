@@ -9,18 +9,22 @@ urls = (
     "/view","view",
     "/view/","view",
     "/new","new",
-    "/wjtest","wjtest",
     "/delete","delete",
     "/delete/","delete",
     "/edit/(\d+)","edit",
     "/login","login",
     "/login/","login",
-    
+    "/logout","logout",
+    "/logout/","logout"
 )
 
 class index:
     def GET(self):
-        return render.user()
+        try:
+            user_name=web.cookies().user_name
+            return render.user()
+        except:    
+            return render.login()
 
 class view:
     def __init__(self):
@@ -30,12 +34,7 @@ class view:
         for post in posts:
             self.user_post.append(post)
         return json.dumps(self.user_post)
-class wjtest:
-    def GET(self):
-        dict={'success':1}
-        return json.dumps(dict)
-        
-  
+
 class new:
     def POST(self):
         i=web.input()
@@ -75,10 +74,29 @@ class delete:
         return json.dumps(d)
 class login:
     def GET(self):
-        return "login"
+        return render.login()
     def POST(self):
-        pass
+        i=web.input()
+        user_name=i.get('user_name')
+        user_pwd=i.get('user_pwd')
+        m=hashlib.md5()
+        m.update(user_pwd)
+        user_pwd=m.hexdigest()
+        result=user_model.is_login(user_name,user_pwd)
+        if result:
+            for r in result:
+                user_level=r.user_level
+            web.setcookie('user_name', user_name,expires='',domain=None,secure=False,httponly=False,path='/')
+            web.setcookie('user_level', user_level,expires='',domain=None,secure=False,httponly=False,path='/')
+            d={'success':1}
+        else:
+            d={'msg':'Some errors occured.'}
+        return json.dumps(d)
         
-        
+class logout:
+    def GET(self):
+        web.setcookie('user_name','',expires=-1,domain=None,secure=False,httponly=False,path='/')
+        web.setcookie('user_level','',expires=-1,domain=None,secure=False,httponly=False,path='/')
+        raise web.SeeOther('/')
 
 app_user=web.application(urls,locals())

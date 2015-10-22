@@ -1,7 +1,10 @@
 import web
 import json
+import sys
 from model import group_model
 from conf.render_config import render
+from base import base
+
 urls = (
     "","index",
     "/","index",
@@ -14,24 +17,29 @@ urls = (
     "/edit/(\d+)","edit"
 )
 
-class index:
+class index(base):
     def GET(self):
-        return render.group()
+        if base.is_login(self):
+            return render.group()
+        else:
+            return render.login()
 
-class view:
+class view(base):
     def __init__(self):
         self.group_post=[]
     def GET(self):
-        posts=group_model.get_group_posts()
-        for post in posts:
-            self.group_post.append(post)
-        return json.dumps(self.group_post)
-class wjtest:
-    def GET(self):
-        dict={'success':1}
-        return json.dumps(dict)
+        if base.is_login(self):
+            posts=group_model.get_group_posts()
+            for post in posts:
+                self.group_post.append(post)
+            return json.dumps(self.group_post)
+        else:
+            return render.login()
         
-  
+        
+        
+
+
 class new:
     def POST(self):
         i=web.input()
